@@ -141,7 +141,17 @@ main {
     width: 100%;
     height: 100%;
     object-fit: cover; /* No black bars */
-    transform: scaleX(-1); /* Mirror effect for intuitive feel */
+    /*transform: scaleX(-1);  Mirror effect for intuitive feel */
+}
+
+/* Mirror ONLY the local user (You) */
+#localVideo {
+    transform: scaleX(-1);
+}
+
+/* BUT, if I am sharing my screen, do NOT mirror it (so I can read text) */
+#localVideo.screen-share-mode {
+    transform: scaleX(1) !important;
 }
 
 .participant-name {
