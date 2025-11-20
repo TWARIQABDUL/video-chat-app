@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="lobby" class="lobby-container">
+        <h1>👋 Welcome to VideoChat</h1>
+        <p>Create a new room or join an existing one.</p>
+        
+        <div class="lobby-controls">
+            <input type="text" id="room-name-input" placeholder="Enter Room Name (e.g. ScienceClass)">
+            <button id="join-btn">Join Room</button>
+        </div>
+        
+        <div class="divider">OR</div>
+        <button id="create-btn" class="secondary-btn">✨ Create Random Room</button>
+    </div>
+
+    <div id="room-container" style="display: none;">
+        <header>
+            <div class="logo">📹 Live</div>
+            <div class="room-info">Room: <span id="room-id">...</span></div>
+        </header>
+
+        <main>
+            <div id="videos" class="video-grid">
+                <div class="video-card">
+                    <video id="localVideo" autoplay muted></video>
+                    <span class="participant-name">You</span>
+                </div>
+            </div>
+
+            <div id="chat" class="chat-sidebar">
+                <div id="messages" class="messages"></div>
+                <form id="form">
+                    <input id="input" type="text" placeholder="Type a message..." autocomplete="off"/>
+                    <button>Send</button>
+                </form>
+            </div>
+        </main>
+
+        <footer>
+            <button id="mute-btn" class="control-btn">🎤</button>
+            <button id="video-btn" class="control-btn">📹</button>
+            <button id="screen-btn" class="control-btn">🖥️</button>
+            <button id="leave-btn" class="control-btn leave-btn">❌ Leave</button>
+        </footer>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

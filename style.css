@@ -1,0 +1,317 @@
+/* VARIABLES & RESET */
+:root {
+    --bg-dark: #111827;       /* Very dark gray (almost black) */
+    --bg-panel: #1F2937;      /* Panel gray */
+    --primary: #3B82F6;       /* Bright Blue */
+    --primary-hover: #2563EB;
+    --danger: #EF4444;        /* Red */
+    --danger-hover: #DC2626;
+    --text-main: #F9FAFB;
+    --text-muted: #9CA3AF;
+    --glass: rgba(17, 24, 39, 0.7); /* Semi-transparent for overlays */
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent full page scroll */
+}
+
+/* ============================
+   1. LOBBY STYLES (New)
+   ============================ */
+.lobby-container {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100; /* Sit on top of everything */
+    text-align: center;
+}
+
+.lobby-card {
+    background: var(--bg-panel);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid #374151;
+}
+
+.lobby-card h1 { margin-top: 0; font-size: 24px; margin-bottom: 10px; }
+.lobby-card p { color: var(--text-muted); margin-bottom: 25px; }
+
+.lobby-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+
+#room-name-input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #374151;
+    background: #111827;
+    color: white;
+    font-size: 16px;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid #374151;
+    color: var(--text-muted);
+    width: 100%;
+    padding: 10px;
+}
+.secondary-btn:hover { background: #374151; color: white; }
+
+/* ============================
+   2. MAIN APP LAYOUT
+   ============================ */
+#room-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 25px;
+    background-color: var(--bg-panel);
+    border-bottom: 1px solid #374151;
+    height: 60px;
+}
+
+.logo { font-size: 18px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 8px;}
+.room-info { font-size: 14px; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 20px;}
+
+main {
+    display: flex;
+    flex: 1; /* Take remaining height */
+    overflow: hidden; /* Keep scrollbars inside specific divs */
+}
+
+/* ============================
+   3. VIDEO GRID
+   ============================ */
+.video-grid {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center; /* Center vertically if few videos */
+    gap: 15px;
+    overflow-y: auto;
+    background-color: #0b0f19; /* Slightly darker than body */
+}
+
+.video-card {
+    position: relative;
+    background-color: black;
+    border-radius: 12px;
+    overflow: hidden;
+    /* Smart sizing: Grow to fill, but keep decent size */
+    flex: 1 1 400px; 
+    max-width: 800px;
+    aspect-ratio: 16 / 9; /* Cinematic ratio */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+    border: 2px solid transparent; /* For active speaker glow */
+    transition: all 0.3s ease;
+}
+
+/* Active Speaker Glow (Toggled by JS) */
+.video-card.active-speaker {
+    border-color: #10B981; /* Green */
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+}
+
+.video-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* No black bars */
+    transform: scaleX(-1); /* Mirror effect for intuitive feel */
+}
+
+.participant-name {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px); /* Glass effect */
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+/* ============================
+   4. CHAT SIDEBAR
+   ============================ */
+.chat-sidebar {
+    width: 320px;
+    background-color: var(--bg-panel);
+    border-left: 1px solid #374151;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column; /* Needed for self/other alignment */
+    gap: 12px;
+}
+
+/* Scrollbar styling */
+.messages::-webkit-scrollbar { width: 6px; }
+.messages::-webkit-scrollbar-thumb { background: #4B5563; border-radius: 3px; }
+
+.messages div {
+    padding: 10px 14px;
+    border-radius: 12px;
+    max-width: 85%;
+    font-size: 14px;
+    line-height: 1.4;
+    position: relative;
+    word-wrap: break-word;
+    animation: fadeIn 0.2s ease;
+}
+
+.messages .self {
+    background-color: var(--primary);
+    color: white;
+    align-self: flex-end; /* Pushes to right */
+    border-bottom-right-radius: 2px;
+}
+
+.messages .other {
+    background-color: #374151;
+    color: var(--text-main);
+    align-self: flex-start; /* Pushes to left */
+    border-bottom-left-radius: 2px;
+}
+
+#form {
+    padding: 15px;
+    background-color: var(--bg-panel);
+    border-top: 1px solid #374151;
+    display: flex;
+    gap: 8px;
+}
+
+#form input {
+    background: #111827;
+    border: 1px solid #374151;
+    color: white;
+    padding: 10px;
+    border-radius: 8px;
+}
+#form input:focus { border-color: var(--primary); }
+
+#form button {
+    background: var(--primary);
+    font-weight: bold;
+}
+
+/* ============================
+   5. FOOTER CONTROLS
+   ============================ */
+footer {
+    background-color: var(--bg-panel);
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    border-top: 1px solid #374151;
+}
+
+.control-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px; /* Squircle looks more modern than circle */
+    border: none;
+    background-color: #374151;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover {
+    background-color: #4B5563;
+    transform: translateY(-2px);
+}
+
+/* Specific states */
+#leave-btn { background-color: rgba(239, 68, 68, 0.2); color: var(--danger); }
+#leave-btn:hover { background-color: var(--danger); color: white; }
+
+/* ============================
+   6. RESPONSIVE
+   ============================ */
+@media (max-width: 768px) {
+    main { flex-direction: column; }
+    
+    .chat-sidebar {
+        width: 100%;
+        height: 35%; /* Take bottom third of screen */
+        border-left: none;
+        border-top: 1px solid #374151;
+    }
+    
+    .video-grid { height: 65%; }
+    
+    .video-card { min-width: 100%; } /* Stack videos on mobile */
+    
+    .control-btn { width: 45px; height: 45px; font-size: 18px; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px);}
+    to { opacity: 1; transform: translateY(0);}
+}
+/* ... Keep your existing CSS ... */
+
+/* NEW: Mute Badge (Red Mic Icon) */
+.mute-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(239, 68, 68, 0.9); /* Red */
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    display: none; /* Hidden by default */
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* NEW: Screen Share Mode (Google Meet Style) */
+/* When sharing screen, we want to see the WHOLE screen, not cropped */
+video.screen-share-mode {
+    object-fit: contain !important; /* Show black bars if needed, don't crop */
+    background: #000;
+}
